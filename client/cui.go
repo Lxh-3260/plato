@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gookit/color"
-	"github.com/hardcore-os/plato/common/sdk"
+	"github.com/lxh-3260/plato/common/sdk"
 	"github.com/rocket049/gocui"
 )
 
@@ -60,7 +60,7 @@ func viewPrint(g *gocui.Gui, name, msg string, newline bool) {
 	g.Update(out.Show)
 }
 
-//doRecv work in goroutine
+// doRecv work in goroutine
 func doRecv(g *gocui.Gui) {
 	recvChannel := chat.Recv()
 	for msg := range recvChannel {

@@ -4,7 +4,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/hardcore-os/plato/ipconf/source"
+	"github.com/lxh-3260/plato/ipconf/source"
 )
 
 type Dispatcher struct {

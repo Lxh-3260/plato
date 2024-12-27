@@ -1,7 +1,7 @@
 package ipconf
 
 import (
-	"github.com/hardcore-os/plato/ipconf/domain"
+	"github.com/lxh-3260/plato/ipconf/domain"
 )
 
 func top5Endports(eds []*domain.Endport) []*domain.Endport {

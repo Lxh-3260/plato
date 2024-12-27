@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hardcore-os/plato/common/cache"
-	"github.com/hardcore-os/plato/common/router"
-	"github.com/hardcore-os/plato/common/timingwheel"
-	"github.com/hardcore-os/plato/state/rpc/client"
+	"github.com/lxh-3260/plato/common/cache"
+	"github.com/lxh-3260/plato/common/router"
+	"github.com/lxh-3260/plato/common/timingwheel"
+	"github.com/lxh-3260/plato/state/rpc/client"
 )
 
 type connState struct {
@@ -135,7 +135,7 @@ func (c *connState) reSetReConnTimer() {
 	if c.reConnTimer != nil {
 		c.reConnTimer.Stop()
 	}
-	
+
 	// 初始化重连定时器
 	c.reConnTimer = AfterFunc(10*time.Second, func() {
 		ctx := context.TODO()

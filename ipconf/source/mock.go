@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/hardcore-os/plato/common/config"
-	"github.com/hardcore-os/plato/common/discovery"
+	"github.com/lxh-3260/plato/common/config"
+	"github.com/lxh-3260/plato/common/discovery"
 )
 
 func testServiceRegister(ctx *context.Context, port, node string) {

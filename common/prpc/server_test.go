@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/hardcore-os/plato/common/config"
+	"github.com/lxh-3260/plato/common/config"
 
-	"github.com/hardcore-os/plato/common/prpc/example/helloservice"
+	"github.com/lxh-3260/plato/common/prpc/example/helloservice"
 
-	ptrace "github.com/hardcore-os/plato/common/prpc/trace"
+	ptrace "github.com/lxh-3260/plato/common/prpc/trace"
 	"google.golang.org/grpc"
 )
 

@@ -3,9 +3,9 @@ package prpc
 import (
 	"testing"
 
-	"github.com/hardcore-os/plato/common/config"
+	"github.com/lxh-3260/plato/common/config"
 
-	ptrace "github.com/hardcore-os/plato/common/prpc/trace"
+	ptrace "github.com/lxh-3260/plato/common/prpc/trace"
 	"github.com/stretchr/testify/assert"
 )
 

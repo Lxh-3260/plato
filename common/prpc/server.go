@@ -9,12 +9,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/hardcore-os/plato/common/prpc/discov/plugin"
+	"github.com/lxh-3260/plato/common/prpc/discov/plugin"
 
 	"github.com/bytedance/gopkg/util/logger"
 
-	"github.com/hardcore-os/plato/common/prpc/discov"
-	serverinterceptor "github.com/hardcore-os/plato/common/prpc/interceptor/server"
+	"github.com/lxh-3260/plato/common/prpc/discov"
+	serverinterceptor "github.com/lxh-3260/plato/common/prpc/interceptor/server"
 	"google.golang.org/grpc"
 )
 
@@ -96,9 +96,10 @@ func NewPServer(opts ...ServerOption) *PServer {
 
 // RegisterService ...
 // eg :
-// p.RegisterService(func(server *grpc.Server) {
-//     test.RegisterGreeterServer(server, &Server{})
-// })
+//
+//	p.RegisterService(func(server *grpc.Server) {
+//	    test.RegisterGreeterServer(server, &Server{})
+//	})
 func (p *PServer) RegisterService(register ...RegisterFn) {
 	p.registers = append(p.registers, register...)
 }

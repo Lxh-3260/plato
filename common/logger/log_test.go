@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	ptrace "github.com/hardcore-os/plato/common/prpc/trace"
+	ptrace "github.com/lxh-3260/plato/common/prpc/trace"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/hardcore-os/plato/common/config"
+	"github.com/lxh-3260/plato/common/config"
 )
 
 func TestLogger(t *testing.T) {

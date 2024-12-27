@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v9"
-	"github.com/hardcore-os/plato/common/config"
+	"github.com/lxh-3260/plato/common/config"
 )
 
 // 声明一个全局的rdb变量，这是一个单机client

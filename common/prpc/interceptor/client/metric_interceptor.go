@@ -7,8 +7,8 @@ import (
 
 	"time"
 
-	"github.com/hardcore-os/plato/common/prpc/prome"
-	"github.com/hardcore-os/plato/common/prpc/util"
+	"github.com/lxh-3260/plato/common/prpc/prome"
+	"github.com/lxh-3260/plato/common/prpc/util"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )

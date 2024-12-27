@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hardcore-os/plato/common/config"
-	"github.com/hardcore-os/plato/common/prpc"
-	"github.com/hardcore-os/plato/common/prpc/example/helloservice"
-	ptrace "github.com/hardcore-os/plato/common/prpc/trace"
+	"github.com/lxh-3260/plato/common/config"
+	"github.com/lxh-3260/plato/common/prpc"
+	"github.com/lxh-3260/plato/common/prpc/example/helloservice"
+	ptrace "github.com/lxh-3260/plato/common/prpc/trace"
 )
 
 func main() {

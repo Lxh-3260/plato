@@ -3,7 +3,7 @@ package gateway
 import (
 	"fmt"
 
-	"github.com/hardcore-os/plato/common/config"
+	"github.com/lxh-3260/plato/common/config"
 	"github.com/panjf2000/ants"
 )
 

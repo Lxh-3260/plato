@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/hardcore-os/plato/common/prpc/prome"
+	"github.com/lxh-3260/plato/common/prpc/prome"
 )
 
 func TestMetricUnaryClientInterceptor(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/bytedance/gopkg/util/logger"
-	"github.com/hardcore-os/plato/common/config"
-	"github.com/hardcore-os/plato/common/discovery"
+	"github.com/lxh-3260/plato/common/config"
+	"github.com/lxh-3260/plato/common/discovery"
 )
 
 func Init() {

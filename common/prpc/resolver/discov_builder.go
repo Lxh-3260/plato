@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hardcore-os/plato/common/prpc/discov"
+	"github.com/lxh-3260/plato/common/prpc/discov"
 	"google.golang.org/grpc/attributes"
 	"google.golang.org/grpc/resolver"
 )

@@ -5,11 +5,11 @@ import (
 	"log"
 
 	"github.com/bytedance/gopkg/util/logger"
-	"github.com/hardcore-os/plato/common/config"
+	"github.com/lxh-3260/plato/common/config"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
-//ServiceRegister 创建租约注册服务
+// ServiceRegister 创建租约注册服务
 type ServiceRegister struct {
 	cli     *clientv3.Client //etcd client
 	leaseID clientv3.LeaseID //租约ID
@@ -20,7 +20,7 @@ type ServiceRegister struct {
 	ctx           *context.Context
 }
 
-//NewServiceRegister 新建注册服务
+// NewServiceRegister 新建注册服务
 func NewServiceRegister(ctx *context.Context, key string, endportinfo *EndpointInfo, lease int64) (*ServiceRegister, error) {
 	cli, err := clientv3.New(clientv3.Config{
 		Endpoints:   config.GetEndpointsForDiscovery(),
@@ -45,7 +45,7 @@ func NewServiceRegister(ctx *context.Context, key string, endportinfo *EndpointI
 	return ser, nil
 }
 
-//设置租约
+// 设置租约
 func (s *ServiceRegister) putKeyWithLease(lease int64) error {
 	//设置租约时间
 	resp, err := s.cli.Grant(*s.ctx, lease)
@@ -78,7 +78,7 @@ func (s *ServiceRegister) UpdateValue(val *EndpointInfo) error {
 	return nil
 }
 
-//ListenLeaseRespChan 监听 续租情况
+// ListenLeaseRespChan 监听 续租情况
 func (s *ServiceRegister) ListenLeaseRespChan() {
 	for leaseKeepResp := range s.keepAliveChan {
 		logger.CtxInfof(*s.ctx, "lease success leaseID:%d, Put key:%s,val:%s reps:+%v",

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/hardcore-os/plato/ipconf"
+	"github.com/lxh-3260/plato/ipconf"
 	"github.com/spf13/cobra"
 )
 

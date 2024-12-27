@@ -6,7 +6,7 @@ import (
 
 	"github.com/bytedance/gopkg/util/logger"
 
-	"github.com/hardcore-os/plato/common/prpc/config"
+	"github.com/lxh-3260/plato/common/prpc/config"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"

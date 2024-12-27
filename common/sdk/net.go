@@ -7,8 +7,8 @@ import (
 	"sync/atomic"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/hardcore-os/plato/common/idl/message"
-	"github.com/hardcore-os/plato/common/tcp"
+	"github.com/lxh-3260/plato/common/idl/message"
+	"github.com/lxh-3260/plato/common/tcp"
 )
 
 type connect struct {

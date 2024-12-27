@@ -7,6 +7,9 @@ import (
 )
 
 func Init(path string) {
+	/*
+		viper读取plato.yaml配置文件中的参数配置，并通过GetStringSlice()key对应的value或 切片
+	*/
 	viper.SetConfigFile(path)
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {

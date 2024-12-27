@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hardcore-os/plato/common/prpc/config"
-	"github.com/hardcore-os/plato/common/prpc/discov"
-	"github.com/hardcore-os/plato/common/prpc/discov/etcd"
+	"github.com/lxh-3260/plato/common/prpc/config"
+	"github.com/lxh-3260/plato/common/prpc/discov"
+	"github.com/lxh-3260/plato/common/prpc/discov/etcd"
 )
 
 // GetDiscovInstance 获取服务发现实例

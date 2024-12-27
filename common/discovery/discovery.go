@@ -5,19 +5,19 @@ import (
 	"sync"
 
 	"github.com/bytedance/gopkg/util/logger"
-	"github.com/hardcore-os/plato/common/config"
+	"github.com/lxh-3260/plato/common/config"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
-//ServiceDiscovery 服务发现
+// ServiceDiscovery 服务发现
 type ServiceDiscovery struct {
 	cli  *clientv3.Client //etcd client
 	lock sync.Mutex
 	ctx  *context.Context
 }
 
-//NewServiceDiscovery  新建发现服务
+// NewServiceDiscovery  新建发现服务
 func NewServiceDiscovery(ctx *context.Context) *ServiceDiscovery {
 	cli, err := clientv3.New(clientv3.Config{
 		Endpoints:   config.GetEndpointsForDiscovery(),
@@ -33,7 +33,7 @@ func NewServiceDiscovery(ctx *context.Context) *ServiceDiscovery {
 	}
 }
 
-//WatchService 初始化服务列表和监视
+// WatchService 初始化服务列表和监视
 func (s *ServiceDiscovery) WatchService(prefix string, set, del func(key, value string)) error {
 	//根据前缀获取现有的key
 	resp, err := s.cli.Get(*s.ctx, prefix, clientv3.WithPrefix())
@@ -49,7 +49,7 @@ func (s *ServiceDiscovery) WatchService(prefix string, set, del func(key, value 
 	return nil
 }
 
-//watcher 监听前缀
+// watcher 监听前缀
 func (s *ServiceDiscovery) watcher(prefix string, rev int64, set, del func(key, value string)) {
 	rch := s.cli.Watch(*s.ctx, prefix, clientv3.WithPrefix(), clientv3.WithRev(rev))
 	logger.CtxInfof(*s.ctx, "watching prefix:%s now...", prefix)
@@ -65,7 +65,7 @@ func (s *ServiceDiscovery) watcher(prefix string, rev int64, set, del func(key, 
 	}
 }
 
-//Close 关闭服务
+// Close 关闭服务
 func (s *ServiceDiscovery) Close() error {
 	return s.cli.Close()
 }

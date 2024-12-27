@@ -2,9 +2,9 @@ package ipconf
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
-	"github.com/hardcore-os/plato/common/config"
-	"github.com/hardcore-os/plato/ipconf/domain"
-	"github.com/hardcore-os/plato/ipconf/source"
+	"github.com/lxh-3260/plato/common/config"
+	"github.com/lxh-3260/plato/ipconf/domain"
+	"github.com/lxh-3260/plato/ipconf/source"
 )
 
 // RunMain 启动web容器

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hardcore-os/plato/common/prpc/discov"
+	"github.com/lxh-3260/plato/common/prpc/discov"
 
 	"github.com/stretchr/testify/assert"
 )

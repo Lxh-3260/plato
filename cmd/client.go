@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/hardcore-os/plato/client"
+	"github.com/lxh-3260/plato/client"
 	"github.com/spf13/cobra"
 )
 

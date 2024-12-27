@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/goccy/go-json"
-	"github.com/hardcore-os/plato/common/idl/message"
-	"github.com/hardcore-os/plato/common/tcp"
+	"github.com/lxh-3260/plato/common/idl/message"
+	"github.com/lxh-3260/plato/common/tcp"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -75,7 +75,7 @@ func (chat *Chat) GetCurClientID() uint64 {
 	return 0
 }
 
-//Close close chat
+// Close close chat
 func (chat *Chat) Close() {
 	chat.conn.close()
 	close(chat.closeChan)
@@ -90,7 +90,7 @@ func (chat *Chat) ReConn() {
 	chat.reConn()
 }
 
-//Recv receive message
+// Recv receive message
 func (chat *Chat) Recv() <-chan *Message {
 	return chat.conn.recv()
 }
