@@ -7,7 +7,7 @@ import (
 	"unsafe"
 )
 
-// 时间轮test1
+// 时间轮test1 2
 // TimingWheel is an implementation of Hierarchical Timing Wheels.
 type TimingWheel struct {
 	tick      int64 // in milliseconds
