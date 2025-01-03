@@ -3,7 +3,7 @@ module github.com/lxh-3260/plato
 go 1.17
 
 require (
-	github.com/cloudwego/hertz v0.2.1
+	github.com/cloudwego/hertz v0.9.4
 	github.com/go-redis/redis/v9 v9.0.0-rc.2
 	github.com/gookit/color v1.5.1
 	github.com/rocket049/gocui v0.3.2
@@ -13,8 +13,12 @@ require (
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bytedance/sonic v1.12.0 // indirect
+	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
+	github.com/cloudwego/base64x v0.1.4 // indirect
+	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -35,10 +39,10 @@ require (
 
 require (
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect
-	github.com/bytedance/gopkg v0.0.0-20220817015305-b879a72dc90f
-	github.com/bytedance/sonic v1.10.2 // indirect
+	github.com/bytedance/gopkg v0.1.0
+	// github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
-	github.com/cloudwego/netpoll v0.2.4 // indirect
+	github.com/cloudwego/netpoll v0.6.4 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/goccy/go-json v0.9.7
@@ -67,7 +71,7 @@ require (
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.8.1
 	github.com/subosito/gotenv v1.3.0 // indirect
-	github.com/tidwall/gjson v1.13.0 // indirect
+	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
@@ -80,7 +84,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.9.0
 	go.uber.org/zap v1.22.0
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
-	golang.org/x/sys v0.2.0
+	golang.org/x/sys v0.24.0
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/grpc v1.48.0
 	gopkg.in/ini.v1 v1.66.4 // indirect

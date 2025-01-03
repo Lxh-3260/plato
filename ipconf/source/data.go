@@ -10,8 +10,11 @@ import (
 
 func Init() {
 	eventChan = make(chan *Event)
-	ctx := context.Background()
-	go DataHandler(&ctx)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel() // 优雅地关闭子协程
+
+	go DataHandler(ctx)
 	if config.IsDebug() {
 		ctx := context.Background()
 		testServiceRegister(&ctx, "7896", "node1")
@@ -21,7 +24,7 @@ func Init() {
 }
 
 // 服务发现处理
-func DataHandler(ctx *context.Context) {
+func DataHandler(ctx context.Context) {
 	dis := discovery.NewServiceDiscovery(ctx)
 	defer dis.Close()
 	setFunc := func(key, value string) {
@@ -31,7 +34,7 @@ func DataHandler(ctx *context.Context) {
 				eventChan <- event
 			}
 		} else {
-			logger.CtxErrorf(*ctx, "DataHandler.setFunc.err :%s", err.Error())
+			logger.CtxErrorf(ctx, "DataHandler.setFunc.err :%s", err.Error())
 		}
 	}
 	delFunc := func(key, value string) {
@@ -41,7 +44,7 @@ func DataHandler(ctx *context.Context) {
 				eventChan <- event
 			}
 		} else {
-			logger.CtxErrorf(*ctx, "DataHandler.delFunc.err :%s", err.Error())
+			logger.CtxErrorf(ctx, "DataHandler.delFunc.err :%s", err.Error())
 		}
 	}
 	err := dis.WatchService(config.GetServicePathForIPConf(), setFunc, delFunc)

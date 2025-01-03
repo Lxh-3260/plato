@@ -21,10 +21,10 @@ const (
 
 type Event struct {
 	Type         EventType
-	IP           string
-	Port         string
-	ConnectNum   float64
-	MessageBytes float64
+	IP           string  // 某个网关IP
+	Port         string  // 网关监听的端口
+	ConnectNum   float64 // 网关的连接数（用于评测某个网关的负载情况以进行负载均衡）
+	MessageBytes float64 // 网关的消息字节数（用于评测某个网关的负载情况以进行负载均衡）
 }
 
 func NewEvent(ed *discovery.EndpointInfo) *Event {

@@ -14,11 +14,11 @@ import (
 type ServiceDiscovery struct {
 	cli  *clientv3.Client //etcd client
 	lock sync.Mutex
-	ctx  *context.Context
+	ctx  context.Context
 }
 
 // NewServiceDiscovery  新建发现服务
-func NewServiceDiscovery(ctx *context.Context) *ServiceDiscovery {
+func NewServiceDiscovery(ctx context.Context) *ServiceDiscovery {
 	cli, err := clientv3.New(clientv3.Config{
 		Endpoints:   config.GetEndpointsForDiscovery(),
 		DialTimeout: config.GetTimeoutForDiscovery(),
@@ -36,7 +36,7 @@ func NewServiceDiscovery(ctx *context.Context) *ServiceDiscovery {
 // WatchService 初始化服务列表和监视
 func (s *ServiceDiscovery) WatchService(prefix string, set, del func(key, value string)) error {
 	//根据前缀获取现有的key
-	resp, err := s.cli.Get(*s.ctx, prefix, clientv3.WithPrefix())
+	resp, err := s.cli.Get(s.ctx, prefix, clientv3.WithPrefix())
 	if err != nil {
 		return err
 	}
@@ -51,8 +51,8 @@ func (s *ServiceDiscovery) WatchService(prefix string, set, del func(key, value 
 
 // watcher 监听前缀
 func (s *ServiceDiscovery) watcher(prefix string, rev int64, set, del func(key, value string)) {
-	rch := s.cli.Watch(*s.ctx, prefix, clientv3.WithPrefix(), clientv3.WithRev(rev))
-	logger.CtxInfof(*s.ctx, "watching prefix:%s now...", prefix)
+	rch := s.cli.Watch(s.ctx, prefix, clientv3.WithPrefix(), clientv3.WithRev(rev))
+	logger.CtxInfof(s.ctx, "watching prefix:%s now...", prefix)
 	for wresp := range rch {
 		for _, ev := range wresp.Events {
 			switch ev.Type {

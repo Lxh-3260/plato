@@ -11,7 +11,7 @@ var wPool *ants.Pool
 
 func initWorkPoll() {
 	var err error
-	if wPool, err = ants.NewPool(config.GetGatewayWorkerPoolNum()); err != nil {
+	if wPool, err = ants.NewPool(config.GetGatewayWorkerPoolNum()); err != nil { // 1024
 		fmt.Printf("InitWorkPoll.err :%s num:%d\n", err.Error(), config.GetGatewayWorkerPoolNum())
 	}
 }

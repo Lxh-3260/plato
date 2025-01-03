@@ -54,6 +54,7 @@ func handAckMsg(c *connect, data []byte) *Message {
 func handPushMsg(c *connect, data []byte) *Message {
 	pushMsg := &message.PushMsg{}
 	proto.Unmarshal(data, pushMsg)
+	// TODO 下行消息在业务层实现推拉结合
 	// if pushMsg.MsgID == c.maxMsgID+1 {
 	// 	c.maxMsgID++
 	msg := &Message{}

@@ -60,7 +60,7 @@ func runProc(c *connection, ep *epoller) {
 		}
 		return
 	}
-	err = wPool.Submit(func() {
+	err = wPool.Submit(func() { // 异步提交任务到协池中完成发送任务 wPool是一个全局变量，管理整个协程池，在initWorkPoll中初始化
 		// step2:交给 state server rpc 处理
 		client.SendMsg(&ctx, getEndpoint(), c.id, dataBuf)
 	})

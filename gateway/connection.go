@@ -14,7 +14,7 @@ const (
 	version      = uint64(0) // 版本控制
 	sequenceBits = uint64(16)
 
-	maxSequence = int64(-1) ^ (int64(-1) << sequenceBits)
+	maxSequence = int64(-1) ^ (int64(-1) << sequenceBits) // 雪花算法的位运算计算
 
 	timeLeft    = uint8(16) // timeLeft = sequenceBits // 时间戳向左偏移量
 	versionLeft = uint8(63) // 左移动到最高位
@@ -25,7 +25,7 @@ const (
 type ConnIDGenerater struct {
 	mu        sync.Mutex
 	LastStamp int64 // 记录上一次ID的时间戳
-	Sequence  int64 // 当前毫秒已经生成的ID序列号(从0 开始累加) 1毫秒内最多生成2^16个ID
+	Sequence  int64 // 当前毫秒已经生成的ID序列号(从0 开始累加) 1毫秒内最多生成2^16个ID（由雪花算法的机器号位数决定）
 }
 
 type connection struct {

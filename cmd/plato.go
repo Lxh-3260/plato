@@ -13,12 +13,13 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	// 命令行没有提供--config参数时，使用默认值 ./plato.yaml作为config文件，后面viper会根据这个文件读取配置
 	rootCmd.PersistentFlags().StringVar(&ConfigPath, "config", "./plato.yaml", "config file (default is ./plato.yaml)")
 }
 
 var rootCmd = &cobra.Command{
 	Use:   "plato",
-	Short: "这是一个超牛逼的IM系统",
+	Short: "IM系统实现连接层",
 	Run:   Plato,
 }
 

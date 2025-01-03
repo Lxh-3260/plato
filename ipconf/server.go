@@ -8,7 +8,7 @@ import (
 )
 
 // RunMain 启动web容器
-func RunMain(path string) {
+func RunMain(path string) { // path = "./plato.yaml"
 	config.Init(path)
 	source.Init() //数据源要优先启动
 	domain.Init() // 初始化调度层

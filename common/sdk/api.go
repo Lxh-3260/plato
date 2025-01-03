@@ -53,6 +53,8 @@ func NewChat(ip net.IP, port int, nick, userID, sessionID string) *Chat {
 	go chat.heartbeat()
 	return chat
 }
+
+// Send 上行消息发送
 func (chat *Chat) Send(msg *Message) {
 	data, _ := json.Marshal(msg)
 	key := fmt.Sprintf("%d", chat.conn.connID)
@@ -124,8 +126,9 @@ Loop:
 	}
 }
 
+// getClientID 客户端生成clientID
 func (chat *Chat) getClientID(sessionID string) uint64 {
-	chat.Lock()
+	chat.Lock() // 保证clientID自增操作的原子性
 	defer chat.Unlock()
 	var res uint64
 	if id, ok := chat.MsgClientIDTable[sessionID]; ok {
