@@ -7,7 +7,6 @@ import (
 	"unsafe"
 )
 
-// 时间轮test1 2
 // TimingWheel is an implementation of Hierarchical Timing Wheels.
 type TimingWheel struct {
 	tick      int64 // in milliseconds
@@ -113,12 +112,12 @@ func (tw *TimingWheel) addOrRun(t *Timer) {
 
 		// Like the standard time.AfterFunc (https://golang.org/pkg/time/#AfterFunc),
 		// always execute the timer's task in its own goroutine.
-		go t.task()
+		go t.task() // 定时器时间到了，执行回调函数
 	}
 }
 
 func (tw *TimingWheel) advanceClock(expiration int64) {
-	currentTime := atomic.LoadInt64(&tw.currentTime)
+	currentTime := atomic.LoadInt64(&tw.currentTime) // 原子性读入int64防止并发的数据竞争
 	if expiration >= currentTime+tw.tick {
 		currentTime = truncate(expiration, tw.tick)
 		atomic.StoreInt64(&tw.currentTime, currentTime)
@@ -165,6 +164,9 @@ func (tw *TimingWheel) Stop() {
 
 // AfterFunc waits for the duration to elapse and then calls f in its own goroutine.
 // It returns a Timer that can be used to cancel the call using its Stop method.
+// 入口：添加一个定时器，d时间后执行f回调函数
+// Parameter1: d 时间间隔
+// Parameter2: f 回调函数ß
 func (tw *TimingWheel) AfterFunc(d time.Duration, f func()) *Timer {
 	t := &Timer{
 		expiration: timeToMs(time.Now().UTC().Add(d)),

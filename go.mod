@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/RussellLuo/timingwheel v0.0.0-20220218152713-54845bda3108 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.12.0 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
