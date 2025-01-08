@@ -26,7 +26,7 @@ func RunMain(path string) {
 		log.Fatalf("StartTCPEPollServer err:%s", err.Error())
 		panic(err)
 	}
-	initWorkPoll()
+	initWorkPoll() // 初始化协程池到全局变量wPool
 	initEpoll(ln, runProc)
 	fmt.Println("-------------im gateway stated------------")
 	cmdChannel = make(chan *service.CmdContext, config.GetGatewayCmdChannelNum())

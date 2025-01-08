@@ -38,6 +38,7 @@ func (ed *Endport) UpdateStat(s *Stat) {
 
 func (ed *Endport) CalculateScore(ctx *IpConfConext) {
 	// 如果 stats 字段是空的，则直接使用上一次计算的结果，此次不更新
+	// 因为NewEndport中有一个不中断的协程在一直更新Stats字段（来源mock中 1s更新一次每个endpoint的metadata的协程）
 	if ed.Stats != nil {
 		ed.ActiveSorce = ed.Stats.CalculateActiveSorce()
 		ed.StaticSorce = ed.Stats.CalculateStaticSorce()

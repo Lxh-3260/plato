@@ -36,8 +36,8 @@ func testServiceRegister(ctx *context.Context, port, node string) {
 		go sr.ListenLeaseRespChan()
 		for { // 保证服务的元数据是动态更新，用于负载均衡，无限循环来定期更新服务注册信息。
 			ed = createOrUpdateEndpointInfo()
-			sr.UpdateValue(&ed)
-			time.Sleep(1 * time.Second)
+			sr.UpdateValue(&ed)         // 调用etcd.Put()更新服务注册信息，DataHandler收到通知后调用setFunc()，向eventChan发一个addNodeEvent，endpoint协程收到该通知，用atomic更新服务发现信息
+			time.Sleep(1 * time.Second) // 1s更新一次每个endpoint的metadata
 		}
 	}()
 }

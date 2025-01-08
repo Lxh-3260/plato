@@ -38,17 +38,11 @@ func Dispatch(ctx *IpConfConext) []*Endport {
 	// Step3: 全局排序，动静结合的排序策略。
 	sort.Slice(eds, func(i, j int) bool {
 		// 优先基于活跃分数进行排序
-		if eds[i].ActiveSorce > eds[j].ActiveSorce {
-			return true
+		if eds[i].ActiveSorce != eds[j].ActiveSorce {
+			return eds[i].ActiveSorce > eds[j].ActiveSorce
 		}
 		// 如果活跃分数相同，则使用静态分数排序
-		if eds[i].ActiveSorce == eds[j].ActiveSorce {
-			if eds[i].StaticSorce > eds[j].StaticSorce {
-				return true
-			}
-			return false
-		}
-		return false
+		return eds[i].StaticSorce > eds[j].StaticSorce
 	})
 	return eds
 }
