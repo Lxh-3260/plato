@@ -34,9 +34,9 @@ func (c *connState) close(ctx context.Context) error {
 	if c.msgTimer != nil {
 		c.msgTimer.Stop()
 	}
-	// TODO 这里如何保证事务性，值得思考一下，或者说有没有必要保证
+	// TODO 这里如何保证事务性，值得思考次一下，或者说有没有必要保证
 	// TODO 这里也可以使用lua或者pipeline 来尽可能合并两次redis的操作 通常在大规模的应用中这是有效的
-	// TODO 这里是要好好思考一下，网络调用次数的时间&空间复杂度的
+	// TODO 这里是要好好思考一下，网络调用数的时间&空间复杂度的
 	slotKey := cs.getLoginSlotKey(c.connID)
 	meta := cs.loginSlotMarshal(c.did, c.connID)
 	err := cache.SREM(ctx, slotKey, meta)

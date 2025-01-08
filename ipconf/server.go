@@ -13,6 +13,6 @@ func RunMain(path string) { // path = "./plato.yaml"
 	source.Init() //数据源要优先启动
 	domain.Init() // 初始化调度层
 	s := server.Default(server.WithHostPorts(":6789"))
-	s.GET("/ip/list", GetIpInfoList)
+	s.GET("/ip/list", GetIpInfoList) // curl为get方法，ip+port为127.0.0.1:6789，api为/ip/list，则调用GetIpInfoList
 	s.Spin()
 }

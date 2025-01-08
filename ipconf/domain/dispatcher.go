@@ -78,7 +78,7 @@ func (dp *Dispatcher) addNode(event *source.Event) {
 		ed = NewEndport(event.IP, event.Port)
 		dp.candidateTable[event.Key()] = ed
 	}
-	ed.UpdateStat(&Stat{
+	ed.UpdateStat(&Stat{ // 异步更新endpoint状态
 		ConnectNum:   event.ConnectNum,
 		MessageBytes: event.MessageBytes,
 	})

@@ -25,6 +25,7 @@ func NewEndport(ip, port string) *Endport {
 		for stat := range ed.window.statChan {
 			ed.window.appendStat(stat)
 			newStat := ed.window.getStat()
+			// 线程安全地更新ed.Stats字段
 			atomic.SwapPointer((*unsafe.Pointer)((unsafe.Pointer)(ed.Stats)), unsafe.Pointer(newStat))
 		}
 	}()

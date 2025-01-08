@@ -31,7 +31,7 @@ func DataHandler(ctx context.Context) {
 		if ed, err := discovery.UnMarshal([]byte(value)); err == nil {
 			if event := NewEvent(ed); ed != nil {
 				event.Type = AddNodeEvent
-				eventChan <- event
+				eventChan <- event // 没有直接在这里删除，而是向channel中发一个delete时间，由dispatcher.go中的goroutine处理
 			}
 		} else {
 			logger.CtxErrorf(ctx, "DataHandler.setFunc.err :%s", err.Error())
@@ -47,7 +47,7 @@ func DataHandler(ctx context.Context) {
 			logger.CtxErrorf(ctx, "DataHandler.delFunc.err :%s", err.Error())
 		}
 	}
-	err := dis.WatchService(config.GetServicePathForIPConf(), setFunc, delFunc)
+	err := dis.WatchService(config.GetServicePathForIPConf(), setFunc, delFunc) // 在mock中key为"/plato/ip_dispatcher/node1 2 3"，后续通过etcd的watcher监控服务变化（通过前缀找到对应的集合）
 	if err != nil {
 		panic(err)
 	}

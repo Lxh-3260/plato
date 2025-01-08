@@ -28,13 +28,16 @@ func NewServiceDiscovery(ctx context.Context) *ServiceDiscovery {
 	}
 
 	return &ServiceDiscovery{
-		cli: cli,
-		ctx: ctx,
+		cli:  cli,
+		lock: sync.Mutex{},
+		ctx:  ctx,
 	}
 }
 
 // WatchService 初始化服务列表和监视
 func (s *ServiceDiscovery) WatchService(prefix string, set, del func(key, value string)) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
 	//根据前缀获取现有的key
 	resp, err := s.cli.Get(s.ctx, prefix, clientv3.WithPrefix())
 	if err != nil {
@@ -51,7 +54,7 @@ func (s *ServiceDiscovery) WatchService(prefix string, set, del func(key, value 
 
 // watcher 监听前缀
 func (s *ServiceDiscovery) watcher(prefix string, rev int64, set, del func(key, value string)) {
-	rch := s.cli.Watch(s.ctx, prefix, clientv3.WithPrefix(), clientv3.WithRev(rev))
+	rch := s.cli.Watch(s.ctx, prefix, clientv3.WithPrefix(), clientv3.WithRev(rev)) // rch通道接收来自etcd服务端的事件
 	logger.CtxInfof(s.ctx, "watching prefix:%s now...", prefix)
 	for wresp := range rch {
 		for _, ev := range wresp.Events {

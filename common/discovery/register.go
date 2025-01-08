@@ -15,8 +15,8 @@ type ServiceRegister struct {
 	leaseID clientv3.LeaseID //租约ID
 	//租约keepalieve相应chan
 	keepAliveChan <-chan *clientv3.LeaseKeepAliveResponse
-	key           string //key
-	val           string //value
+	key           string //key : endpoint node name
+	val           string //value : ip port metadata(字节数量，连接数量)
 	ctx           *context.Context
 }
 
@@ -24,7 +24,7 @@ type ServiceRegister struct {
 func NewServiceRegister(ctx *context.Context, key string, endportinfo *EndpointInfo, lease int64) (*ServiceRegister, error) {
 	cli, err := clientv3.New(clientv3.Config{
 		Endpoints:   config.GetEndpointsForDiscovery(),
-		DialTimeout: config.GetTimeoutForDiscovery(),
+		DialTimeout: config.GetTimeoutForDiscovery(), // 连接超时时间为 5 秒
 	})
 	if err != nil {
 		log.Fatal(err)
