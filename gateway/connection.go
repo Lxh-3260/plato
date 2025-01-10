@@ -51,7 +51,7 @@ func NewConnection(conn *net.TCPConn) *connection {
 	}
 	return &connection{
 		id:   id,
-		fd:   socketFD(conn),
+		fd:   socketFD(conn), // 避免频繁的系统调用，用对象的方式保存fd
 		conn: conn,
 	}
 }
@@ -79,6 +79,7 @@ func (w *ConnIDGenerater) NextID() (uint64, error) {
 	return w.nextID()
 }
 
+// 全局递增的id生成器
 func (w *ConnIDGenerater) nextID() (uint64, error) {
 	timeStamp := w.getMilliSeconds()
 	if timeStamp < w.LastStamp {

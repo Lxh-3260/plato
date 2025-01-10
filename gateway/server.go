@@ -21,14 +21,15 @@ var cmdChannel chan *service.CmdContext
 // RunMain 启动网关服务
 func RunMain(path string) {
 	config.Init(path)
-	ln, err := net.ListenTCP("tcp", &net.TCPAddr{Port: config.GetGatewayTCPServerPort()})
+	ln, err := net.ListenTCP("tcp", &net.TCPAddr{Port: config.GetGatewayTCPServerPort()}) // 8901
 	if err != nil {
 		log.Fatalf("StartTCPEPollServer err:%s", err.Error())
 		panic(err)
 	}
-	initWorkPoll() // 初始化协程池到全局变量wPool
+	initWorkPoll() // 初始化协程池到全局变量wPool，在应用层池化复用，降低了协程的创建和销毁的开销
 	initEpoll(ln, runProc)
 	fmt.Println("-------------im gateway stated------------")
+	select {} // 阻塞主线程
 	cmdChannel = make(chan *service.CmdContext, config.GetGatewayCmdChannelNum())
 	s := prpc.NewPServer(
 		prpc.WithServiceName(config.GetGatewayServiceName()),
