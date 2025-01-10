@@ -51,8 +51,9 @@ func newEPool(ln *net.TCPListener, cb func(c *connection, ep *epoller)) *ePool {
 // 多个goroutine监听Accept channel，但是只有一个goroutine会成功消费accept，其他的goroutine会阻塞在Accept方法上
 func (e *ePool) createAcceptProcess() {
 	for i := 0; i < runtime.NumCPU(); i++ {
-		go func() {
+		go func(i int) {
 			for {
+				// TODO: 给某个epoll对象加序号，用于区分epoll对象
 				conn, e := e.ln.AcceptTCP() // 接受一个新的来自客户端的tcp连接
 				// 限流熔断，当超过某个TCP连接数时，直接关闭连接
 				if !checkTcp() {
@@ -61,16 +62,16 @@ func (e *ePool) createAcceptProcess() {
 				}
 				setTcpConifg(conn) // 开启keepalive
 				if e != nil {
-					if ne, ok := e.(net.Error); ok && ne.Temporary() {
-						fmt.Errorf("accept err: %v", e)
+					if ne, ok := e.(net.Error); ok && (ne.Timeout() || ne.Temporary()) {
+						log.Printf("accept err: %v", e)
 						continue
 					}
-					fmt.Errorf("accept err: %v", e)
+					log.Printf("Epoll %d: accept err: %v", i, e)
 				}
 				c := NewConnection(conn) // go无法直接获取fd，需要通过反射获取
 				ep.addTask(c)
 			}
-		}()
+		}(i)
 	}
 }
 
