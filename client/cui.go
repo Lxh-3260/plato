@@ -90,7 +90,7 @@ func doSay(g *gocui.Gui, cv *gocui.View) {
 		if p != nil {
 			msg := &sdk.Message{
 				Type:       sdk.MsgTypeText,
-				Name:       "logic",
+				Name:       "lxh",
 				FormUserID: "123213",
 				ToUserID:   "222222",
 				Content:    string(p)}

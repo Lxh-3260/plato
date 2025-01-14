@@ -31,7 +31,7 @@ type ConnIDGenerater struct {
 type connection struct {
 	id   uint64 // 进程级别的生命周期
 	fd   int
-	e    *epoller
+	e    *epoller // 反引用，把conn所对应的epoll轮询器加到conn属性中
 	conn *net.TCPConn
 }
 

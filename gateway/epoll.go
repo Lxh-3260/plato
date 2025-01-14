@@ -39,7 +39,7 @@ func newEPool(ln *net.TCPListener, cb func(c *connection, ep *epoller)) *ePool {
 	return &ePool{
 		eChan:  make(chan *connection, config.GetGatewayEpollerChanNum()), // 100
 		done:   make(chan struct{}),
-		eSize:  config.GetGatewayEpollerNum(), // 4
+		eSize:  config.GetGatewayEpollerNum(), // 等于cpu核数
 		tables: sync.Map{},
 		ln:     ln,
 		f:      cb,

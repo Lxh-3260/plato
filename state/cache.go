@@ -32,7 +32,7 @@ func InitCacheState(ctx context.Context) {
 	router.Init(ctx)
 	cs.connToStateTable = sync.Map{}
 	cs.initLoginSlot(ctx)
-	cs.server = &service.Service{CmdChannel: make(chan *service.CmdContext, config.GetSateCmdChannelNum())}
+	cs.server = &service.Service{CmdChannel: make(chan *service.CmdContext, config.GetSateCmdChannelNum())} // 初始化全局的cmdChannel，用于与gateway rpc通信
 }
 
 // 初始化连接登陆槽

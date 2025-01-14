@@ -29,13 +29,13 @@ func RunMain(path string) {
 	initWorkPoll() // 初始化协程池到全局变量wPool，在应用层池化复用，降低了协程的创建和销毁的开销
 	initEpoll(ln, runProc)
 	fmt.Println("-------------im gateway stated------------")
-	select {} // 阻塞主线程
-	cmdChannel = make(chan *service.CmdContext, config.GetGatewayCmdChannelNum())
+	cmdChannel = make(chan *service.CmdContext, config.GetGatewayCmdChannelNum()) // 初始化全局的cmdChannel，用于与state server rpc通信
 	s := prpc.NewPServer(
 		prpc.WithServiceName(config.GetGatewayServiceName()),
 		prpc.WithIP(config.GetGatewayServiceAddr()),
 		prpc.WithPort(config.GetGatewayRPCServerPort()), prpc.WithWeight(config.GetGatewayRPCWeight()))
 	fmt.Println(config.GetGatewayServiceName(), config.GetGatewayServiceAddr(), config.GetGatewayRPCServerPort(), config.GetGatewayRPCWeight())
+	// 在etcd注册rpc服务
 	s.RegisterService(func(server *grpc.Server) {
 		service.RegisterGatewayServer(server, &service.Service{CmdChannel: cmdChannel})
 	})
@@ -84,9 +84,10 @@ func cmdHandler() {
 	}
 }
 func closeConn(cmd *service.CmdContext) {
-	if connPtr, ok := ep.tables.Load(cmd.ConnID); ok {
+	if connPtr, ok := ep.tables.Load(cmd.ConnID); ok { // 从全局的ep.tables中获取conn，拿到了就删除，拿不到就不删除。保证请求幂等性
 		conn, _ := connPtr.(*connection)
-		conn.Close()
+		conn.Close() // Close之后socket会被清空，当引用计数为0时，会被gc回收
+		// ep.tables.Delete(cmd.ConnID)
 	}
 }
 func sendMsgByCmd(cmd *service.CmdContext) {

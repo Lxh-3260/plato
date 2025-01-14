@@ -273,7 +273,7 @@ func (c *gatewayClient) DelConn(ctx context.Context, in *GatewayRequest, opts ..
 
 func (c *gatewayClient) Push(ctx context.Context, in *GatewayRequest, opts ...grpc.CallOption) (*GatewayResponse, error) {
 	out := new(GatewayResponse)
-	err := c.cc.Invoke(ctx, "/service.Gateway/Push", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/service.Gateway/Push", in, out, opts...) // invoke用于发起一次rpc调用，由state server发起，调用gateway的Push方法
 	if err != nil {
 		return nil, err
 	}

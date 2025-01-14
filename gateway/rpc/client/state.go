@@ -26,7 +26,7 @@ func initStateClient() {
 
 func CancelConn(ctx *context.Context, endpoint string, connID uint64, Payload []byte) error {
 	rpcCtx, _ := context.WithTimeout(*ctx, 100*time.Millisecond)
-	stateClient.CancelConn(rpcCtx, &service.StateRequest{
+	stateClient.CancelConn(rpcCtx, &service.StateRequest{ // 构造一个请求，调用state server的rpc接口
 		Endpoint: endpoint,
 		ConnID:   connID,
 		Data:     Payload,

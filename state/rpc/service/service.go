@@ -24,7 +24,7 @@ type Service struct {
 
 func (s *Service) CancelConn(ctx context.Context, sr *StateRequest) (*StateResponse, error) {
 	c := context.TODO()
-	s.CmdChannel <- &CmdContext{
+	s.CmdChannel <- &CmdContext{ // 真正的逻辑还是在cmdChannel中处理，这里只是将请求放入cmdChannel中
 		Ctx:      &c,
 		Cmd:      CancelConnCmd,
 		ConnID:   sr.ConnID,

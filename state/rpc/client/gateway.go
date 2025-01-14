@@ -21,12 +21,12 @@ func initGatewayClient() {
 	if err != nil {
 		panic(err)
 	}
-	gatewayClient = service.NewGatewayClient(conn)
+	gatewayClient = service.NewGatewayClient(conn) // state这边通过连接创建客户端，就可以用rpc直接调用gateway的两个服务DelConn和Push
 }
 
 func DelConn(ctx *context.Context, connID uint64, Payload []byte) error {
 	rpcCtx, _ := context.WithTimeout(*ctx, 100*time.Millisecond)
-	gatewayClient.DelConn(rpcCtx, &service.GatewayRequest{ConnID: connID, Data: Payload})
+	gatewayClient.DelConn(rpcCtx, &service.GatewayRequest{ConnID: connID, Data: Payload}) // rpc调用的两个参数，一个是上下文，一个是请求参数
 	return nil
 }
 

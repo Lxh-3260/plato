@@ -282,7 +282,8 @@ func (c *stateClient) CancelConn(ctx context.Context, in *StateRequest, opts ...
 
 func (c *stateClient) SendMsg(ctx context.Context, in *StateRequest, opts ...grpc.CallOption) (*StateResponse, error) {
 	out := new(StateResponse)
-	err := c.cc.Invoke(ctx, "/service.state/SendMsg", in, out, opts...)
+	//当 Invoke 方法被调用时，它会根据 "/service.state/SendMsg" 这个字符串来确定要调用的具体 RPC 方法，即 state/rpc/service.go 文件中的 SendMsg 方法。
+	err := c.cc.Invoke(ctx, "/service.state/SendMsg", in, out, opts...) // invoke用于发起一次rpc调用，由gateway server发起，调用state server的SendMsg接口
 	if err != nil {
 		return nil, err
 	}

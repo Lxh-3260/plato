@@ -32,7 +32,7 @@ type serverOptions struct {
 	port        int
 	weight      int
 	health      bool
-	d           discov.Discovery
+	d           discov.Discovery // etcd注册grpc服务，实现服务发现、负载均衡和故障转移
 }
 
 type ServerOption func(opts *serverOptions)
