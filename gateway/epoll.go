@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"reflect"
 	"runtime"
 	"sync"
 	"sync/atomic"
@@ -190,10 +189,16 @@ func (e *epoller) wait(msec int) ([]*connection, error) {
 	return connections, nil
 }
 func socketFD(conn *net.TCPConn) int {
-	tcpConn := reflect.Indirect(reflect.ValueOf(*conn)).FieldByName("conn")
-	fdVal := tcpConn.FieldByName("fd")
-	pfdVal := reflect.Indirect(fdVal).FieldByName("pfd")
-	return int(pfdVal.FieldByName("Sysfd").Int())
+	file, err := conn.File()
+	if err != nil {
+		panic(err)
+	}
+	fd := int(file.Fd())
+	return fd
+	// tcpConn := reflect.Indirect(reflect.ValueOf(*conn)).FieldByName("conn")
+	// fdVal := tcpConn.FieldByName("fd")
+	// pfdVal := reflect.Indirect(fdVal).FieldByName("pfd")
+	// return int(pfdVal.FieldByName("Sysfd").Int())
 }
 
 // 设置go 进程打开文件数的限制
