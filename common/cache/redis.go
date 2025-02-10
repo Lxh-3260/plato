@@ -12,7 +12,7 @@ import (
 // 声明一个全局的rdb变量，这是一个单机client
 var rdb *redis.Client
 
-func InitRedis(ctx context.Context) {
+func InitRedis(ctx context.Context) { // 在router路由信息表中（存did到endpoint、connid的映射）和state状态表中都调用了这个函数
 	if rdb != nil {
 		return
 	}

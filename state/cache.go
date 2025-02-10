@@ -115,13 +115,13 @@ func (cs *cacheState) reConn(ctx context.Context, oldConnID, newConnID uint64) e
 
 func (cs *cacheState) reSetHeartTimer(connID uint64) {
 	if state, ok := cs.loadConnIDState(connID); ok {
-		state.reSetHeartTimer()
+		state.reSetHeartTimer() // 所有对状态的改变和读取都需要加锁（由于是对单个状态加锁，锁粒度很小，所以对系统整体并行度无影响），loadConnIDState调用sync.Map的Load方法是线程安全的，所以不需要加锁
 	}
 }
 func (cs *cacheState) loadConnIDState(connID uint64) (*connState, bool) {
 	if data, ok := cs.connToStateTable.Load(connID); ok {
-		sate, _ := data.(*connState)
-		return sate, true
+		state, _ := data.(*connState)
+		return state, true
 	}
 	return nil, false
 }

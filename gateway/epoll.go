@@ -158,9 +158,9 @@ func (e *epoller) add(conn *connection) error {
 	if err != nil {
 		return err
 	}
-	e.fdToConnTable.Store(fd, conn) // 存储conn.fd和connection的映射关系，因为事件触发时，epoll只能知道fd，需要通过fd找到对应的connection，那个时候需要用到这个map
+	e.fdToConnTable.Store(fd, conn) // 存储conn.fd和connection的映射关系，因为wait事件触发时，epoll只能知道fd，需要通过fd找到对应的connection，那个时候需要用到这个map(反查询)
 	ep.tables.Store(conn.id, conn)
-	conn.BindEpoller(e)
+	conn.BindEpoller(e) // 绑定epoller
 	return nil
 }
 func (e *epoller) remove(c *connection) error {
@@ -174,6 +174,8 @@ func (e *epoller) remove(c *connection) error {
 	e.fdToConnTable.Delete(c.fd)
 	return nil
 }
+
+// EpollWait 会阻塞直到有事件发生，返回发生事件的fd
 func (e *epoller) wait(msec int) ([]*connection, error) {
 	events := make([]unix.EpollEvent, config.GetGatewayEpollWaitQueueSize())
 	n, err := unix.EpollWait(e.fd, events, msec)
@@ -182,6 +184,7 @@ func (e *epoller) wait(msec int) ([]*connection, error) {
 	}
 	var connections []*connection
 	for i := 0; i < n; i++ {
+		// epoll在wait时只能拿到fd，需要通过fd找到对应的connection
 		if conn, ok := e.fdToConnTable.Load(int(events[i].Fd)); ok { // epoll只能知道每个触发事件的fd，需要通过fd找到对应的connection
 			connections = append(connections, conn.(*connection))
 		}

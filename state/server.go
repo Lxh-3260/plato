@@ -43,7 +43,7 @@ func RunMain(path string) {
 // 消费信令通道，识别gateway与state server之间的协议路由
 func cmdHandler() {
 	for cmdCtx := range cs.server.CmdChannel {
-		switch cmdCtx.Cmd {
+		switch cmdCtx.Cmd { // 两个信令，一个gateway rpc调用的方法取消连接，一个发送消息
 		case service.CancelConnCmd:
 			fmt.Printf("cancel conn endpoint:%s, coonID:%d, data:%+v\n", cmdCtx.Endpoint, cmdCtx.ConnID, cmdCtx.Payload)
 			cs.connLogOut(*cmdCtx.Ctx, cmdCtx.ConnID)
@@ -60,7 +60,7 @@ func cmdHandler() {
 
 // 识别消息类型，识别客户端与state server之间的协议路由
 func msgCmdHandler(cmdCtx *service.CmdContext, msgCmd *message.MsgCmd) {
-	switch msgCmd.Type {
+	switch msgCmd.Type { // 信令为发送消息时，消息类型有五种：登陆、心跳、重连、上行、ack
 	case message.CmdType_Login:
 		loginMsgHandler(cmdCtx, msgCmd)
 	case message.CmdType_Heartbeat:
@@ -83,10 +83,10 @@ func loginMsgHandler(cmdCtx *service.CmdContext, msgCmd *message.MsgCmd) {
 		return
 	}
 	if loginMsg.Head != nil {
-		// 这里会把 login msg 传送给业务层做处理
+		// TODO:这里会把 login msg 传送给业务层做处理
 		fmt.Println("loginMsgHandler", loginMsg.Head.DeviceID)
 	}
-	err = cs.connLogin(*cmdCtx.Ctx, loginMsg.Head.DeviceID, cmdCtx.ConnID)
+	err = cs.connLogin(*cmdCtx.Ctx, loginMsg.Head.DeviceID, cmdCtx.ConnID) // 登陆时解析消息头中的设备id，并于connID绑定
 	if err != nil {
 		panic(err)
 	}
@@ -103,7 +103,7 @@ func hearbeatMsgHandler(cmdCtx *service.CmdContext, msgCmd *message.MsgCmd) {
 	}
 	cs.reSetHeartTimer(cmdCtx.ConnID)
 	fmt.Printf("hearbeatMsgHandler connID=%d\n", cmdCtx.ConnID)
-	// TODO未减少通信量，可以暂时不回复心跳的ack
+	// TODO未减少通信量，可以暂时不回复心跳的ack（防止占用大量带宽）
 }
 
 // 重连逻辑处理
@@ -116,8 +116,8 @@ func reConnMsgHandler(cmdCtx *service.CmdContext, msgCmd *message.MsgCmd) {
 		fmt.Printf("reConnMsgHandler:err=%s\n", err.Error())
 		return
 	}
-	// 重连的消息头中的connID才是上一次断开连接的connID
-	if err := cs.reConn(*cmdCtx.Ctx, reConnMsg.Head.ConnID, cmdCtx.ConnID); err != nil {
+	// 重连的消息头中的connID才是上一次断开连接的connID，信令cmdCtx的connID是新连接的connID
+	if err := cs.reConn(*cmdCtx.Ctx, reConnMsg.Head.ConnID, cmdCtx.ConnID); err != nil { // 重连逻辑：删除索引表中旧的connID，创建新的connID，并更新路由表
 		code, msg = 1, "reconn failed"
 		panic(err)
 	}
@@ -185,9 +185,9 @@ func sendACKMsg(ackType message.CmdType, connID, clientID uint64, code uint32, m
 	sendMsg(connID, message.CmdType_ACK, downLoad)
 }
 
-// 发送msg
+// 下行消息发送msg
 func sendMsg(connID uint64, ty message.CmdType, downLoad []byte) {
-	mc := &message.MsgCmd{}
+	mc := &message.MsgCmd{} // gateway和state之间收发消息都用 顶层对象message.MsgCmd
 	mc.Type = ty
 	mc.Payload = downLoad
 	data, err := proto.Marshal(mc)

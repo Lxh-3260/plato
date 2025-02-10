@@ -63,7 +63,7 @@ func (c *connState) close(ctx context.Context) error {
 		return err
 	}
 
-	err = client.DelConn(&ctx, c.connID, nil)
+	err = client.DelConn(&ctx, c.connID, nil) // rpc调用gateway的delete方法，主动断开连接
 	if err != nil {
 		return err
 	}

@@ -39,8 +39,15 @@ func SendMsg(ctx *context.Context, endpoint string, connID uint64, Payload []byt
 	fmt.Println("sendMsg", connID, string(Payload))
 	_, err := stateClient.SendMsg(rpcCtx, &service.StateRequest{
 		Endpoint: endpoint,
-		ConnID:   connID,
-		Data:     Payload,
+		ConnID:   connID,  // cmdctx中的connID是新的connID
+		Data:     Payload, // payload中是protoBuf编码的消息，里面存着各种信令对应的消息体结构
+		/*
+			顶层cmd pb结构
+			message MsgCmd{
+			   CmdType Type = 1;
+			   bytes Payload = 2;
+			}
+		*/
 	})
 	if err != nil {
 		panic(err)

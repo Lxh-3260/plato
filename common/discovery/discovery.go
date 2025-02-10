@@ -58,7 +58,7 @@ func (s *ServiceDiscovery) watcher(prefix string, rev int64, set, del func(key, 
 	logger.CtxInfof(s.ctx, "watching prefix:%s now...", prefix)
 	for wresp := range rch {
 		for _, ev := range wresp.Events {
-			switch ev.Type {
+			switch ev.Type { // 阻塞型回调，根据事件类型进行相应的回调函数
 			case mvccpb.PUT: //修改或者新增
 				set(string(ev.Kv.Key), string(ev.Kv.Value))
 			case mvccpb.DELETE: //删除
