@@ -17,7 +17,7 @@ func InitRedis(ctx context.Context) { // 在router路由信息表中（存did到
 		return
 	}
 	endpoints := config.GetCacheRedisEndpointList()
-	opt := &redis.Options{Addr: endpoints[0], PoolSize: 10000}
+	opt := &redis.Options{Addr: endpoints[0], PoolSize: 1000}
 	rdb = redis.NewClient(opt)
 	if _, err := rdb.Ping(ctx).Result(); err != nil {
 		panic(err)
@@ -25,7 +25,7 @@ func InitRedis(ctx context.Context) { // 在router路由信息表中（存did到
 	initLuaScript(ctx)
 }
 func GetBytes(ctx context.Context, key string) ([]byte, error) {
-	cmd := rdb.Conn().Get(ctx, key)
+	cmd := rdb.Get(ctx, key)
 	if cmd == nil {
 		return nil, errors.New("redis GetBytes cmd is nil")
 	}
@@ -37,7 +37,7 @@ func GetBytes(ctx context.Context, key string) ([]byte, error) {
 }
 
 func GetUInt64(ctx context.Context, key string) (uint64, error) {
-	cmd := rdb.Conn().Get(ctx, key)
+	cmd := rdb.Get(ctx, key)
 	if cmd == nil {
 		return 0, errors.New("redis GetUInt64 cmd is nil")
 	}
@@ -53,7 +53,7 @@ func SetBytes(ctx context.Context, key string, value []byte, ttl time.Duration) 
 }
 
 func Del(ctx context.Context, key string) error {
-	cmd := rdb.Conn().Del(ctx, key)
+	cmd := rdb.Del(ctx, key)
 	if cmd == nil {
 		return errors.New("redis Del cmd is nil")
 	}
@@ -69,7 +69,7 @@ func SADD(ctx context.Context, key string, member interface{}) error {
 }
 
 func SREM(ctx context.Context, key string, members ...interface{}) error {
-	cmd := rdb.Conn().SRem(ctx, key, members...)
+	cmd := rdb.SRem(ctx, key, members...)
 	if cmd == nil {
 		return errors.New("redis SREM cmd is nil")
 	}
@@ -77,15 +77,15 @@ func SREM(ctx context.Context, key string, members ...interface{}) error {
 }
 
 func SmembersStrSlice(ctx context.Context, key string) ([]string, error) {
-	cmd := rdb.Conn().SMembers(ctx, key)
+	cmd := rdb.SMembers(ctx, key)
 	if cmd == nil {
-		return nil, errors.New("redis SmembersUint64StructMap cmd is nil")
+		return nil, errors.New("redis SmembersStrSlice cmd is nil")
 	}
 	return cmd.Result()
 }
 
 func Incr(ctx context.Context, key string, ttl time.Duration) error {
-	_, err := rdb.Conn().Pipelined(ctx, func(p redis.Pipeliner) error {
+	_, err := rdb.Pipelined(ctx, func(p redis.Pipeliner) error {
 		p.Incr(ctx, key)
 		p.Expire(ctx, key, ttl)
 		return nil
