@@ -4,24 +4,25 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	_ "net/http/pprof"
 
 	"github.com/lxh-3260/plato/common/sdk"
 )
 
 var (
-	TcpConnNum int32 = 10000
+	TcpConnNum int32 = 100
 )
 
 // 压测入口
 /*
 获取 CPU 的性能分析报告
-go tool pprof http://localhost:6060/debug/pprof/profile?seconds=30
+go tool pprof http://localhost:8888/debug/pprof/profile?seconds=30
 
 获取内存的性能分析报告
-go tool pprof http://localhost:6060/debug/pprof/heap
+go tool pprof http://localhost:8888/debug/pprof/heap
 
 获取 goroutine 的性能分析报告
-go tool pprof http://localhost:6060/debug/pprof/goroutine
+go tool pprof http://localhost:8888/debug/pprof/goroutine
 
 查看占用的所有端口
 sudo lsof -i -P -n | grep plato

@@ -60,15 +60,15 @@ func (e *ePool) createAcceptProcess() {
 		go func(i int) {
 			for {
 				// TODO: 给某个epoll对象加序号，用于区分epoll对象
-				conn, e := e.ln.AcceptTCP() // 接受一个新的来自客户端的tcp连接
+				conn, err := e.ln.AcceptTCP() // 接受一个新的来自客户端的tcp连接
 				// 限流熔断，当超过某个TCP连接数时，直接关闭连接
 				if !checkTcp() {
 					_ = conn.Close()
 					continue
 				}
 				setTcpConifg(conn) // 开启keepalive
-				if e != nil {
-					if ne, ok := e.(net.Error); ok && (ne.Timeout() || ne.Temporary()) {
+				if err != nil {
+					if ne, ok := err.(net.Error); ok && (ne.Timeout() || ne.Temporary()) {
 						log.Printf("accept err: %v", e)
 						continue
 					}
@@ -103,6 +103,7 @@ func (e *ePool) startEProc() {
 			case conn := <-e.eChan: // epoller池中某个核的epoll接受到新的连接task，放入eChan中，在这里被消费
 				if err := ep.add(conn); err != nil {
 					fmt.Printf("failed to add connection %v\n", err)
+					fmt.Println("######conn information:", conn)
 					conn.Close() //登录未成功直接关闭连接
 					continue
 				}

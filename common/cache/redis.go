@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/go-redis/redis/v9"
@@ -27,6 +31,17 @@ func InitRedis(ctx context.Context) { // 在router路由信息表中（存did到
 	stats := rdb.PoolStats()
 	fmt.Printf("###Redis Pool Stats-----\nTotal Conns: %d, Idle Conns: %d, Stale Conns: %d\n",
 		stats.TotalConns, stats.IdleConns, stats.StaleConns)
+	// 监听退出信号
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
+
+	// 启动 Goroutine 监听信号
+	go func() {
+		sig := <-sigs
+		log.Printf("收到信号: %v, 释放资源...", sig)
+		rdb.Close() // 关闭 Redis 连接
+		os.Exit(0)
+	}()
 	initLuaScript(ctx)
 }
 func GetBytes(ctx context.Context, key string) ([]byte, error) {
