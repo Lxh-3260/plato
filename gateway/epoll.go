@@ -17,6 +17,7 @@ import (
 var ep *ePool    // epoll池，epoll轮询器池(epoll数量和cpu核数对应)
 var tcpNum int32 // 当前服务允许接入的最大tcp连接数
 
+// epoll 对象池
 type ePool struct {
 	// eid    int // epoll id
 	eChan  chan *connection
@@ -25,6 +26,12 @@ type ePool struct {
 	done   chan struct{}                    // 用于关闭epoll，资源回收
 	ln     *net.TCPListener                 // TCP监听器
 	f      func(c *connection, ep *epoller) // 回调runProc函数
+}
+
+// epoller 对象 轮询器(轮询器数量和cpu核数对应)，每个轮询器有自己的fd和连接表
+type epoller struct {
+	fd            int
+	fdToConnTable sync.Map
 }
 
 func initEpoll(ln *net.TCPListener, f func(c *connection, ep *epoller)) {
@@ -68,7 +75,7 @@ func (e *ePool) createAcceptProcess() {
 					log.Printf("Epoll %d: accept err: %v", i, e)
 				}
 				c := NewConnection(conn) // go无法直接获取fd，需要通过反射获取
-				ep.addTask(c)
+				ep.addTask(c)            // 向channel中添加一个新的连接task，等待epoll池中的某个核的epoll处理
 			}
 		}(i)
 	}
@@ -94,13 +101,13 @@ func (e *ePool) startEProc() {
 			case <-e.done: // 资源回收，优雅地关闭epoller
 				return
 			case conn := <-e.eChan: // epoller池中某个核的epoll接受到新的连接task，放入eChan中，在这里被消费
-				addTcpNum()
-				fmt.Printf("tcpNum:%d\n", tcpNum)
 				if err := ep.add(conn); err != nil {
 					fmt.Printf("failed to add connection %v\n", err)
 					conn.Close() //登录未成功直接关闭连接
 					continue
 				}
+				addTcpNum()
+				fmt.Printf("tcpNum:%d\n", tcpNum)
 				fmt.Printf("EpollerPool new connection[%v] tcpSize:%d\n", conn.RemoteAddr(), tcpNum)
 			}
 		}
@@ -128,12 +135,6 @@ func (e *ePool) startEProc() {
 
 func (e *ePool) addTask(c *connection) {
 	e.eChan <- c
-}
-
-// epoller 对象 轮询器
-type epoller struct {
-	fd            int
-	fdToConnTable sync.Map
 }
 
 func newEpoller() (*epoller, error) {

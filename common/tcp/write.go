@@ -12,7 +12,7 @@ func SendData(conn *net.TCPConn, data []byte) error {
 			return err
 		}
 		writeLen = writeLen + len
-		if writeLen >= totalLen {
+		if writeLen >= totalLen { //循环 Write() 直到全部数据发出，这样可能可以防止数据只发送了一部分，导致接收端数据不完整。
 			break
 		}
 	}

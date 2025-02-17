@@ -31,7 +31,7 @@ func DataHandler(ctx context.Context) {
 		if ed, err := discovery.UnMarshal([]byte(value)); err == nil {
 			if event := NewEvent(ed); ed != nil {
 				event.Type = AddNodeEvent
-				eventChan <- event // 没有直接在这里删除，而是向channel中发一个delete时间，由dispatcher.go中的goroutine处理
+				eventChan <- event
 			}
 		} else {
 			logger.CtxErrorf(ctx, "DataHandler.setFunc.err :%s", err.Error())
@@ -40,7 +40,7 @@ func DataHandler(ctx context.Context) {
 	delFunc := func(key, value string) {
 		if ed, err := discovery.UnMarshal([]byte(value)); err == nil {
 			if event := NewEvent(ed); ed != nil {
-				event.Type = DelNodeEvent
+				event.Type = DelNodeEvent // 没有直接在这里删除，而是向channel中发一个delete时间，由dispatcher.go中的goroutine处理
 				eventChan <- event
 			}
 		} else {

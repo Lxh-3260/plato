@@ -35,7 +35,8 @@ func CancelConn(ctx *context.Context, endpoint string, connID uint64, Payload []
 }
 
 func SendMsg(ctx *context.Context, endpoint string, connID uint64, Payload []byte) error {
-	rpcCtx, _ := context.WithTimeout(*ctx, 100*time.Millisecond)
+	rpcCtx, _ := context.WithTimeout(*ctx, 500*time.Millisecond)
+	// defer cancel()
 	fmt.Println("sendMsg", connID, string(Payload))
 	_, err := stateClient.SendMsg(rpcCtx, &service.StateRequest{
 		Endpoint: endpoint,
@@ -50,7 +51,8 @@ func SendMsg(ctx *context.Context, endpoint string, connID uint64, Payload []byt
 		*/
 	})
 	if err != nil {
-		panic(err)
+		fmt.Printf("SendMsg failed: %v\n", err)
+		return err
 	}
 	return nil
 }

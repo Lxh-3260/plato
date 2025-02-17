@@ -21,7 +21,7 @@ var cmdChannel chan *service.CmdContext
 // RunMain 启动网关服务
 func RunMain(path string) {
 	config.Init(path)
-	ln, err := net.ListenTCP("tcp", &net.TCPAddr{Port: config.GetGatewayTCPServerPort()}) // 8901
+	ln, err := net.ListenTCP("tcp", &net.TCPAddr{Port: config.GetGatewayTCPServerPort()}) // 8900
 	if err != nil {
 		log.Fatalf("StartTCPEPollServer err:%s", err.Error())
 		panic(err)

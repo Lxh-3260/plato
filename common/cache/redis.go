@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v9"
@@ -17,11 +18,15 @@ func InitRedis(ctx context.Context) { // 在router路由信息表中（存did到
 		return
 	}
 	endpoints := config.GetCacheRedisEndpointList()
-	opt := &redis.Options{Addr: endpoints[0], PoolSize: 1000}
+	opt := &redis.Options{Addr: endpoints[0], PoolSize: 10000}
 	rdb = redis.NewClient(opt)
 	if _, err := rdb.Ping(ctx).Result(); err != nil {
 		panic(err)
 	}
+	// debug
+	stats := rdb.PoolStats()
+	fmt.Printf("###Redis Pool Stats-----\nTotal Conns: %d, Idle Conns: %d, Stale Conns: %d\n",
+		stats.TotalConns, stats.IdleConns, stats.StaleConns)
 	initLuaScript(ctx)
 }
 func GetBytes(ctx context.Context, key string) ([]byte, error) {

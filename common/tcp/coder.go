@@ -12,6 +12,6 @@ type DataPgk struct {
 
 func (d *DataPgk) Marshal() []byte {
 	bytesBuffer := bytes.NewBuffer([]byte{})
-	binary.Write(bytesBuffer, binary.BigEndian, d.Len)
-	return append(bytesBuffer.Bytes(), d.Data...)
+	binary.Write(bytesBuffer, binary.BigEndian, d.Len) // 先写入 4 字节长度
+	return append(bytesBuffer.Bytes(), d.Data...)      // 再追加数据
 }

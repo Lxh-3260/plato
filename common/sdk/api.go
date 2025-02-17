@@ -48,7 +48,10 @@ func NewChat(ip net.IP, port int, nick, userID, sessionID string) *Chat {
 		closeChan:        make(chan struct{}),
 		MsgClientIDTable: make(map[string]uint64),
 	}
-	go chat.loop()
+	if chat.conn == nil {
+		return nil
+	}
+	go chat.loop() // 监听服务端下行消息
 	chat.login()
 	go chat.heartbeat()
 	return chat

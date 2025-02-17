@@ -43,7 +43,7 @@ func readFixedData(conn *net.TCPConn, buf []byte) error {
 			return err
 		}
 		pos = pos + c
-		if pos == totalSize {
+		if pos == totalSize { // 直到读够 totalSize，这样即使 TCP 拆包，readFixedData() 也能拼接完整数据包。
 			break
 		}
 	}
