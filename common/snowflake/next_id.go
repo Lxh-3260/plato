@@ -1,6 +1,7 @@
-package common
+package main
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -78,4 +79,31 @@ func (w *Worker) nextID() uint64 {
 
 func (w *Worker) getMilliSeconds() int64 {
 	return time.Now().UnixNano() / 1e6 // 纳秒转毫秒
+}
+
+func main() {
+	start := time.Now()
+	fmt.Println("start generate id", start)
+	w := NewWorker(1, 1)
+	wg := sync.WaitGroup{}
+	count := 1000000
+	wg.Add(count)
+	ch := make(chan uint64)
+	for i := 0; i < count; i++ {
+		go func() {
+			id := w.NextID()
+			ch <- id
+			wg.Done()
+		}()
+	}
+	m := make(map[uint64]struct{})
+	for i := 0; i < count; i++ {
+		id := <-ch
+		if _, exist := m[id]; exist {
+			panic("duplicate id")
+		}
+		m[id] = struct{}{}
+	}
+	wg.Wait()
+	fmt.Println("All id generated", time.Now(), "cost", time.Since(start))
 }
