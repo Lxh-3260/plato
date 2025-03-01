@@ -31,11 +31,11 @@ func GetStateServerLoginSlotRange() []int {
 	}
 	slotRnageStr := viper.GetString("state.conn_state_slot_range")
 	slotRnage := strings.Split(slotRnageStr, ",")
-	left, err := strconv.Atoi(slotRnage[0])
+	left, err := strconv.Atoi(slotRnage[0]) // 0
 	if err != nil {
 		panic(err)
 	}
-	right, err := strconv.Atoi(slotRnage[1])
+	right, err := strconv.Atoi(slotRnage[1]) // 1024
 	if err != nil {
 		panic(err)
 	}

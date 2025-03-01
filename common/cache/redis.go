@@ -44,6 +44,7 @@ func InitRedis(ctx context.Context) { // 在router路由信息表中（存did到
 	}()
 	initLuaScript(ctx)
 }
+
 func GetBytes(ctx context.Context, key string) ([]byte, error) {
 	cmd := rdb.Get(ctx, key)
 	if cmd == nil {
@@ -80,6 +81,7 @@ func Del(ctx context.Context, key string) error {
 	return cmd.Err()
 }
 
+// Sadd 命令将一个或多个成员元素加入到集合中，已经存在于集合的成员元素将被忽略。
 func SADD(ctx context.Context, key string, member interface{}) error {
 	cmd := rdb.SAdd(ctx, key, member)
 	if cmd == nil {
@@ -88,6 +90,7 @@ func SADD(ctx context.Context, key string, member interface{}) error {
 	return cmd.Err()
 }
 
+// Srem 命令用于移除集合中的一个或多个成员元素，不存在的成员元素将被忽略。
 func SREM(ctx context.Context, key string, members ...interface{}) error {
 	cmd := rdb.SRem(ctx, key, members...)
 	if cmd == nil {
@@ -96,6 +99,7 @@ func SREM(ctx context.Context, key string, members ...interface{}) error {
 	return cmd.Err()
 }
 
+// SmembersStrSlice 命令用于返回集合中的所有成员。
 func SmembersStrSlice(ctx context.Context, key string) ([]string, error) {
 	cmd := rdb.SMembers(ctx, key)
 	if cmd == nil {

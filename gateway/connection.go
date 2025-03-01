@@ -16,7 +16,7 @@ const (
 
 	maxSequence = int64(-1) ^ (int64(-1) << sequenceBits) // 雪花算法的位运算计算
 
-	timeLeft    = uint8(16) // timeLeft = sequenceBits // 时间戳向左偏移量
+	timeLeft    = uint8(16) // timeLeft = sequenceBits // 时间戳由右向左偏移量
 	versionLeft = uint8(63) // 左移动到最高位
 	// 2020-05-20 08:00:00 +0800 CST
 	twepoch = int64(1589923200000) // 常量时间戳(毫秒)
@@ -50,7 +50,7 @@ func NewConnection(conn *net.TCPConn) *connection {
 		panic(err) // 在线服务需要解决这个问题 ，报错而不能panic
 	}
 	return &connection{
-		id:   id,
+		id:   id,             // conntion_id由gateway生成
 		fd:   socketFD(conn), // 避免频繁的系统调用，用对象的方式保存fd
 		conn: conn,
 	}

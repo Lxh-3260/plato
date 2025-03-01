@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	gatewayRotuerKey = "gateway_rotuer_%d"
+	gatewayRotuerKey = "gateway_rotuer_%d" // 没加hash tag，这个key会被分散到不同的shared分片实例上，因为route不需要强制在某个redis实例上，可以跨redis
 	ttl7D            = 7 * 24 * 60 * 60
 )
 

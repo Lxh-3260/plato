@@ -41,13 +41,13 @@ func handAckMsg(c *connect, data []byte) *Message {
 	proto.Unmarshal(data, ackMsg)
 	switch ackMsg.Type {
 	case message.CmdType_Login, message.CmdType_ReConn:
-		atomic.StoreUint64(&c.connID, ackMsg.ConnID)
+		atomic.StoreUint64(&c.connID, ackMsg.ConnID) // 登陆和重连时都要原子地保存Ack中的connID
 	}
 	return &Message{
 		Type:       MsgTypeAck,
 		Name:       "lxh",
-		FormUserID: "1212121",
-		ToUserID:   "222212122",
+		FormUserID: "100",
+		ToUserID:   "200",
 		Content:    ackMsg.Msg,
 	}
 }

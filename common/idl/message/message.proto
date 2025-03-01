@@ -23,7 +23,7 @@ message MsgCmd{
 // 上行消息 pb结构
 message UPMsg{
     UPMsgHead Head = 1;
-    bytes UPMsgBody = 2;
+    bytes UPMsgBody = 2; // 上行消息体，交给业务层解析
  }
  
  // 上行消息头 pb结构

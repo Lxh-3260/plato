@@ -97,6 +97,7 @@ func (c *connState) reSetMsgTimer(connID, sessionID, msgID uint64) {
 	if c.msgTimer != nil {
 		c.msgTimer.Stop()
 	}
+	// TODO这里可以添加repush上限，给connState添加一个repush次数的字段，超过次数则不再repush，防止耗尽资源；这里是push到收到为止，容易导致系统宕机，连接断开完全可以pull一下
 	c.msgTimerLock = fmt.Sprintf("%d_%d", sessionID, msgID)
 	c.msgTimer = AfterFunc(100*time.Millisecond, func() {
 		rePush(connID)
@@ -124,7 +125,7 @@ func (c *connState) reSetHeartTimer() {
 		c.heartTimer.Stop()
 	}
 	c.heartTimer = AfterFunc(5*time.Second, func() {
-		c.reSetReConnTimer()
+		c.reSetReConnTimer() // 心跳超时5s，则认为客户端已经断开，需要重新连接
 	})
 }
 
@@ -136,10 +137,10 @@ func (c *connState) reSetReConnTimer() {
 		c.reConnTimer.Stop()
 	}
 
-	// 初始化重连定时器
+	// 初始化重连定时器：当10s内客户端还没有重连，导致没有收到心跳包，则认为客户端已经断开，需要主动断开连接，回收资源
 	c.reConnTimer = AfterFunc(10*time.Second, func() {
 		ctx := context.TODO()
-		// 整体connID状态登出
+		// 整体connID状态登出，回收连接资源
 		cs.connLogOut(ctx, c.connID)
 	})
 }

@@ -20,8 +20,8 @@ var cs *cacheState
 
 // 远程cache状态
 type cacheState struct {
-	msgID            uint64 // test
-	connToStateTable sync.Map
+	msgID            uint64   // 测试用，不用理解msgid
+	connToStateTable sync.Map // conn_id -> *connState
 	server           *service.Service
 }
 
@@ -65,10 +65,10 @@ func (cs *cacheState) newConnState(did, connID uint64) *connState {
 }
 
 func (cs *cacheState) connLogin(ctx context.Context, did, connID uint64) error {
-	state := cs.newConnState(did, connID)
+	state := cs.newConnState(did, connID) // 登陆时写的redis时要写入did
 	// 登陆槽存储
-	slotKey := cs.getLoginSlotKey(connID)
-	meta := cs.loginSlotMarshal(did, connID)
+	slotKey := cs.getLoginSlotKey(connID)    // login_slot_set_{connID % 1024}
+	meta := cs.loginSlotMarshal(did, connID) // did|connID
 	err := cache.SADD(ctx, slotKey, meta)
 	if err != nil {
 		return err
@@ -76,12 +76,12 @@ func (cs *cacheState) connLogin(ctx context.Context, did, connID uint64) error {
 
 	// 添加路由记录
 	endPoint := fmt.Sprintf("%s:%d", config.GetGatewayServiceAddr(), config.GetSateServerPort())
-	err = router.AddRecord(ctx, did, endPoint, connID)
+	err = router.AddRecord(ctx, did, endPoint, connID) // did在此处用于router，如果想要改造成MQ，这里追加一个参数分区号，然后在router中根据分区号找到对应的MQ
 	if err != nil {
 		return err
 	}
 
-	//TODO 上行消息 max_client_id 初始化, 现在相当于生命周期在conn维度，后面重构sdk时会调整到会话维度
+	//TODO 上行消息 max_client_id 初始化, 现在相当于生命周期在conn维度，后面重构sdk时会调整到会话维度（思考题4：跨max_client_id跨链接维度唯一）
 
 	// 本地状态存储
 	cs.storeConnIDState(connID, state)
@@ -107,14 +107,14 @@ func (cs *cacheState) reConn(ctx context.Context, oldConnID, newConnID uint64) e
 		did uint64
 		err error
 	)
-	if did, err = cs.connLogOut(ctx, oldConnID); err != nil {
+	if did, err = cs.connLogOut(ctx, oldConnID); err != nil { // 重连先登出旧链接，登陆新链接，所以需要新的登陆时把did传进来
 		return err
 	}
 	return cs.connLogin(ctx, did, newConnID) // 重连路由是不用更新的
 }
 
 func (cs *cacheState) reSetHeartTimer(connID uint64) {
-	if state, ok := cs.loadConnIDState(connID); ok {
+	if state, ok := cs.loadConnIDState(connID); ok { // 根据connID获取状态对象
 		state.reSetHeartTimer() // 所有对状态的改变和读取都需要加锁（由于是对单个状态加锁，锁粒度很小，所以对系统整体并行度无影响），loadConnIDState调用sync.Map的Load方法是线程安全的，所以不需要加锁
 	}
 }
@@ -138,7 +138,7 @@ func (cs *cacheState) getLoginSlotKey(connID uint64) string {
 	connStateSlotList := config.GetStateServerLoginSlotRange()
 	slotSize := uint64(len(connStateSlotList))
 	slot := connID % slotSize
-	slotKey := fmt.Sprintf(cache.LoginSlotSetKey, connStateSlotList[slot])
+	slotKey := fmt.Sprintf(cache.LoginSlotSetKey, connStateSlotList[slot]) // login_slot_set_{1024}
 	return slotKey
 }
 
@@ -164,7 +164,7 @@ func (cs *cacheState) compareAndIncrClientID(ctx context.Context, connID, oldMax
 	return res > 0
 }
 
-// 操作last msg 结构
+// reload模块操作 last msg 结构
 func (cs *cacheState) appendLastMsg(ctx context.Context, connID uint64, pushMsg *message.PushMsg) error {
 	if pushMsg == nil {
 		return errors.New("pushMsg is nil")
@@ -173,15 +173,17 @@ func (cs *cacheState) appendLastMsg(ctx context.Context, connID uint64, pushMsg 
 		state *connState
 		ok    bool
 	)
-	if state, ok = cs.loadConnIDState(connID); !ok {
+	if state, ok = cs.loadConnIDState(connID); !ok { // 根据connID load一个状态，如果状态不存在说明连接资源已经被回收
 		return errors.New("connID state is nil")
 	}
-	slot := cs.getConnStateSlot(connID)
-	key := fmt.Sprintf(cache.LastMsgKey, slot, connID)
+	slot := cs.getConnStateSlot(connID)                // slot = connID % 1024
+	key := fmt.Sprintf(cache.LastMsgKey, slot, connID) // last_msg_{slot}_{connID}
 	// TODO 现在假设一个链接只有一个会话，后面再讲IMserver，会进行重构
-	msgTimerLock := fmt.Sprintf("%d_%d", pushMsg.SessionID, pushMsg.MsgID)
+	msgTimerLock := fmt.Sprintf("%d_%d", pushMsg.SessionID, pushMsg.MsgID) // 判断当前锁住的是哪个消息，如果ACK不匹配，则不会正确ACK删除飞行队列中的消息；如果ACK匹配，则删除飞行队列中的消息；MsgID是会话级别全局递增的
 	msgData, _ := proto.Marshal(pushMsg)
 	state.appendMsg(ctx, key, msgTimerLock, msgData)
+	// TODO： 这样实现的last msg是连接维度的最后一条消息状态存储，但是正确的im应该是会话级别的最后一条消息(因为一个client-server的连接可能有多个会话)，在这里是因为一个连接只能有一个会话，所以这么实现，后期可以修改。
+	// 修改方法就是根据sessionID，每个session对应一个会话，一个connID可以对应多个sessionID
 	return nil
 }
 
@@ -227,7 +229,7 @@ func (cs *cacheState) loginSlotUnmarshal(mate string) (uint64, uint64) {
 	if err != nil {
 		panic(err)
 	}
-	return did, connID
+	return did, connID // did是用于route key的回写，否则没办法找到对应的链接状态
 }
 func (cs *cacheState) loginSlotMarshal(did, connID uint64) string {
 	return fmt.Sprintf("%d|%d", did, connID)

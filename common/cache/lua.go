@@ -15,7 +15,12 @@ type luaPart struct {
 }
 
 var luaScriptTable map[string]*luaPart = map[string]*luaPart{
-	LuaCompareAndIncrClientID: {
+	LuaCompareAndIncrClientID: { // 原子自增的lua脚本
+		/*
+			keys[1] = max_client_id_{slot}_connID; argv[1] = old_client_id argv[2]; = expire_time
+			检查键KEYS[1]是否存在，如果不存在，则将其设置为0。
+			检查键KEYS[1]的值是否等于ARGV[1]，如果相等，则对这个键的值进行自增（redis.call('incr', KEYS[1])）。
+		*/
 		LuaScript: "if redis.call('exists', KEYS[1]) == 0 then redis.call('set', KEYS[1], 0) end;if redis.call('get', KEYS[1]) == ARGV[1] then redis.call('incr', KEYS[1]);redis.call('expire', KEYS[1], ARGV[2]); return 1 else return -1 end",
 	},
 }

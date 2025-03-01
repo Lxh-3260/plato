@@ -93,7 +93,7 @@ func loginMsgHandler(cmdCtx *service.CmdContext, msgCmd *message.MsgCmd) {
 	sendACKMsg(message.CmdType_Login, cmdCtx.ConnID, 0, 0, "login ok")
 }
 
-// 心跳消息的处理
+// 心跳消息的处理（心跳消息的发送是sdk里面的heartbeat函数）
 func hearbeatMsgHandler(cmdCtx *service.CmdContext, msgCmd *message.MsgCmd) {
 	heartMsg := &message.HeartbeatMsg{}
 	err := proto.Unmarshal(msgCmd.Payload, heartMsg)
@@ -101,7 +101,7 @@ func hearbeatMsgHandler(cmdCtx *service.CmdContext, msgCmd *message.MsgCmd) {
 		fmt.Printf("hearbeatMsgHandler:err=%s\n", err.Error())
 		return
 	}
-	cs.reSetHeartTimer(cmdCtx.ConnID)
+	cs.reSetHeartTimer(cmdCtx.ConnID) // 代码逻辑迁移cache
 	fmt.Printf("hearbeatMsgHandler connID=%d\n", cmdCtx.ConnID)
 	// TODO未减少通信量，可以暂时不回复心跳的ack（防止占用大量带宽）
 }
@@ -134,7 +134,7 @@ func upMsgHandler(cmdCtx *service.CmdContext, msgCmd *message.MsgCmd) {
 	}
 	if cs.compareAndIncrClientID(*cmdCtx.Ctx, cmdCtx.ConnID, upMsg.Head.ClientID) {
 		// 调用下游业务层rpc，只有当rpc回复成功后才能更新max_clientID
-		sendACKMsg(message.CmdType_UP, cmdCtx.ConnID, upMsg.Head.ClientID, 0, "ok")
+		sendACKMsg(message.CmdType_UP, cmdCtx.ConnID, upMsg.Head.ClientID, 0, "ok") // 上行消息的ack回复，确保可靠性，这里的messageType应该是CmdType_ACK
 		// TODO 这里应该调用业务层的代码
 		pushMsg(*cmdCtx.Ctx, cmdCtx.ConnID, cs.msgID, 0, upMsg.UPMsgBody)
 	}
@@ -200,7 +200,7 @@ func sendMsg(connID uint64, ty message.CmdType, downLoad []byte) {
 
 // 重新发送push msg
 func rePush(connID uint64) {
-	pushMsg, err := cs.getLastMsg(context.Background(), connID)
+	pushMsg, err := cs.getLastMsg(context.Background(), connID) // 扩展到多会话的时候这里要加sessionID，唯一标识会话，防止踩踏ACK(会话1 ACK 会话2的消息)
 	if err != nil {
 		panic(err)
 	}
